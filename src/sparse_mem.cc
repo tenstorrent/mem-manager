@@ -21,7 +21,7 @@ sparse_mem::data_t sparse_mem::read(addr_t addr, sz_t size) {
 }
 
 void sparse_mem::write(addr_t addr, const data_t& data) {
-    
+
     for (const auto& datum : data) {
         mem_[addr++] = datum;
     }

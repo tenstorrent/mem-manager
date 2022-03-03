@@ -6,4 +6,4 @@ API:
 
 Componenets
 * sparse_mem
-* mem_manager 
+* mem_manager
