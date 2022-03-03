@@ -1,0 +1,7 @@
+cc_library(
+    name = "mem_manager",
+    hdrs = ["mem_manager.h"],
+    srcs = glob(include = ["*.cc", "*.h"], exclude = ["mem_manager.h"]),
+    includes = ["."],
+    visibility = ["//:__pkg__"],
+)

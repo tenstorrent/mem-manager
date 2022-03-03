@@ -1,0 +1,5 @@
+cc_library(
+    name = "mem_manager",
+    deps = ["//src:mem_manager"],
+    visibility = ["//visibility:public"],
+)

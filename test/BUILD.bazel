@@ -1,0 +1,9 @@
+cc_test(
+  name = "sparse_mem_test",
+  size = "small",
+  srcs = ["sparse_mem_test.cc"],
+  deps = [
+    "//:mem_manager",
+    "@com_google_googletest//:gtest_main"
+  ],
+)
