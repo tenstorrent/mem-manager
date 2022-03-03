@@ -1,0 +1,19 @@
+FROM rockylinux:8.5 as mem-manager
+
+ARG BAZEL_VERSION=4.2.1
+ARG BAZEL_INSTALLER_URL=https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
+ARG BAZEL_BUILDFARM_VERSION=1.11.2
+
+RUN yum -y install \
+    gcc-c++        \
+    unzip          \
+    java-devel
+
+RUN curl -o bazel-installer.sh -sSL ${BAZEL_INSTALLER_URL} \
+    && chmod +x bazel-installer.sh                         \
+    && ./bazel-installer.sh                                \
+    && rm bazel-installer.sh                               \
+    && bazel version
+
+ENTRYPOINT ["/usr/bin/env"]
+CMD ["bash"]
