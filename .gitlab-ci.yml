@@ -1,0 +1,10 @@
+image:
+    name: yyz-gitlab.local.tenstorrent.com:5005/riscv/dv/mem-manager/mem-manager:452a7ea3536bcde6a751a325c5da0a1f81133d869305a0066a295f309ac566cb
+
+stages:
+    - test
+
+test:
+    stage: test
+    script:
+        - bazel test test:all --test_output=all
