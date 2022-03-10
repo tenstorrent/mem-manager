@@ -2,9 +2,9 @@
 #include <cinttypes>
 #include <numeric>
 #include "mem_manager.h"
+#include "tools/cpp/runfiles/runfiles.h"
 
-// Demonstrate some basic assertions.
-TEST(SparseMem, BasicAssertions) {
+TEST(Mem, WritingReading) {
 
     mem_manager mm;
     std::unordered_map<std::uint64_t, std::vector<std::uint8_t>> written;
@@ -21,4 +21,25 @@ TEST(SparseMem, BasicAssertions) {
         EXPECT_EQ(it.second, mm.read(it.first, it.second.size()));
     }
 
+}
+
+TEST(Mem, ElfLoading) {
+
+    using bazel::tools::cpp::runfiles::Runfiles;
+    std::string error;
+    std::unique_ptr<Runfiles> runfiles(Runfiles::CreateForTest(&error));
+
+    EXPECT_TRUE(runfiles);
+
+    std::string elf = runfiles->Rlocation("__main__/test/arith.riscv");
+
+    EXPECT_NE(elf, "");
+
+    mem_manager mm;
+    mm.load_ELF(elf);
+
+    mem_manager::data_t data{{
+0x03, 0x2d, 0x81, 0x06, 0x83, 0x2d, 0xc1, 0x06, 0x03, 0x2e, 0x01, 0x07, 0x83, 0x2e, 0x41, 0x07, 0x03, 0x2f, 0x81, 0x07, 0x83, 0x2f, 0xc1, 0x07, 0x13, 0x01, 0xc1, 0x07, 0x73, 0x00, 0x20, 0x30, 0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    }};
+    EXPECT_EQ(mm.read(0x80000000 + 5056, data.size()), data);
 }
