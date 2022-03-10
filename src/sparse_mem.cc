@@ -8,7 +8,7 @@ sparse_mem::data_t sparse_mem::read(addr_t addr, sz_t size) {
     data_t data(size);
 
     struct gen {
-        decltype(mem_) mem;
+        decltype(mem_)& mem;
         addr_t addr;
         datum_t operator()() {
             return mem[addr++];

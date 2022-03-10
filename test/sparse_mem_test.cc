@@ -45,4 +45,6 @@ TEST(Mem, ElfLoading) {
     EXPECT_EQ(mm.read(0x80000000 + 0x13c0, data.size()), data);
     EXPECT_FALSE(mm.check(0x80000000 + 0x147c, {0}));
     EXPECT_TRUE(mm.check(0x80000000 + 0x147c -1, {0}));
+    EXPECT_EQ(mm.read(0x80000000 + 0x147c, 1), mem_manager::data_t{0});
+    EXPECT_TRUE(mm.check(0x80000000 + 0x147c, {0}));
 }
