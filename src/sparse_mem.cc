@@ -31,7 +31,8 @@ void sparse_mem::write(addr_t addr, const data_t& data) {
 bool sparse_mem::check(addr_t addr, const data_t& data) {
 
     for (const auto& datum : data) {
-        if(mem_[addr++] != datum) {
+        auto it = mem_.find(addr++);
+        if(it == mem_.end() || it->second != datum) {
             return false;
         }
     }
