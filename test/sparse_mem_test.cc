@@ -23,6 +23,35 @@ TEST(Mem, WritingReading) {
 
 }
 
+TEST(Mem, CBindings) {
+
+    mem_manager* mm = mem_manager_create();
+
+    std::unordered_map<std::uint64_t, std::vector<std::uint8_t>> written;
+
+    for (int i = 0; i < 10; i++) {
+        std::uint64_t addr = std::uint64_t(1) << i;
+        std::vector<std::uint8_t> data(i);
+        std::iota(data.begin(), data.end(), addr);
+        mem_manager_write(mm, addr, data.size(), &data[0]);
+        written[addr] = data;
+    }
+
+    for (const auto& it : written) {
+        std::uint8_t* data = new std::uint8_t[it.second.size()];
+        mem_manager_read(mm, it.first, it.second.size(), data);
+
+        for (size_t s = 0; s < it.second.size(); s++) {
+            EXPECT_EQ(it.second[s], data[s]);
+        }
+
+        delete data;
+    }
+
+    mem_manager_destroy(mm);
+
+}
+
 TEST(Mem, ElfLoading) {
 
     using bazel::tools::cpp::runfiles::Runfiles;

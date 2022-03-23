@@ -1,41 +1,41 @@
 #include "sparse_mem.h"
-#include <algorithm>
 
 sparse_mem::sparse_mem() {}
 
 sparse_mem::data_t sparse_mem::read(addr_t addr, sz_t size) {
 
     data_t data(size);
-
-    struct gen {
-        decltype(mem_)& mem;
-        addr_t addr;
-        datum_t operator()() {
-            return mem[addr++];
-        }
-    };
-
-    std::generate(data.begin(), data.end(), gen{mem_, addr});
-
+    readt(addr, size, std::begin(data));
     return data;
+
+}
+
+void sparse_mem::read(addr_t addr, sz_t size, datum_t* data) {
+
+    readt(addr, size, data);
+
 }
 
 void sparse_mem::write(addr_t addr, const data_t& data) {
 
-    for (const auto& datum : data) {
-        mem_[addr++] = datum;
-    }
+    writet(addr, data.size(), std::cbegin(data));
 
 }
 
-bool sparse_mem::check(addr_t addr, const data_t& data) {
+void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data) {
 
-    for (const auto& datum : data) {
-        auto it = mem_.find(addr++);
-        if(it == mem_.end() || it->second != datum) {
-            return false;
-        }
-    }
+    writet(addr, size, data);
 
-    return true;
+}
+
+bool sparse_mem::check(addr_t addr, const data_t& data) const {
+
+    return checkt(addr, data.size(), std::cbegin(data));
+
+}
+
+bool sparse_mem::check(addr_t addr, sz_t size, const datum_t* data) const {
+
+    return checkt(addr, size, data);
+
 }

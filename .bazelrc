@@ -1,1 +1,1 @@
-build --copt=-Wall --copt=-Werror
+build --copt=-Wall --copt=-Werror --copt=-std=c++17
