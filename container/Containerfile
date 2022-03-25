@@ -7,7 +7,10 @@ ARG BAZEL_BUILDFARM_VERSION=1.11.2
 RUN yum -y install \
     gcc-c++        \
     unzip          \
-    java-devel
+    java-devel     \
+    perl           \
+    python3        \
+    zlib-devel
 
 RUN curl -o bazel-installer.sh -sSL ${BAZEL_INSTALLER_URL} \
     && chmod +x bazel-installer.sh                         \

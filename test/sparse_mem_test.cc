@@ -3,6 +3,7 @@
 #include <numeric>
 #include "mem_manager.h"
 #include "tools/cpp/runfiles/runfiles.h"
+#include "Vmem_manager_test.h"
 
 TEST(Mem, WritingReading) {
 
@@ -19,6 +20,19 @@ TEST(Mem, WritingReading) {
 
     for (const auto& it : written) {
         EXPECT_EQ(it.second, mm.read(it.first, it.second.size()));
+    }
+
+}
+
+TEST(Mem, SVBindings) {
+
+    Vmem_manager_test top;
+    int argc = 1;
+    const char* argv[] = {"test"};
+    Verilated::commandArgs(argc, argv);
+
+    while (!Verilated::gotFinish()) {
+        top.eval();
     }
 
 }
