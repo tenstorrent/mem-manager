@@ -5,7 +5,7 @@ load("@rules_verilator//verilator:defs.bzl", "verilator_cc_library")
 verilog_library(
     name = "mem_manager_test_sv_lib",
     srcs = ["mem_manager_test.sv"],
-    deps = ["//src:mem_manager_svh"],
+    deps = ["//:mem_manager_svh"],
 )
 
 verilog_flist(

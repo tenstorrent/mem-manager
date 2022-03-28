@@ -1,15 +1,25 @@
 load("@rules_hdl//verilog:providers.bzl", "verilog_library")
 
-cc_library(
-    name = "mem_manager",
-    hdrs = ["mem_manager.h"],
-    srcs = glob(include = ["*.cc", "*.h"], exclude = ["mem_manager.h"]),
-    includes = ["."],
-    visibility = ["//visibility:public"],
-)
+libs = {
+    "mem_manager_dpi": {"alwayslink": True, "linkstatic": True},
+    "mem_manager"    : {},
+}
+
+[
+    cc_library(
+        name = name,
+        hdrs = ["mem_manager.h"],
+        srcs = glob(include = ["*.cc", "*.h"], exclude = ["mem_manager.h"]),
+        includes = ["."],
+        visibility = ["//:__pkg__"],
+        alwayslink = kwargs.get("alwayslink", False),
+        linkstatic = kwargs.get("linkstatic", False),
+    )
+    for name,kwargs in libs.items()
+]
 
 verilog_library(
     name = "mem_manager_svh",
     srcs = ["mem_manager.svh"],
-    visibility = ["//visibility:public"],
+    visibility = ["//:__pkg__"],
 )

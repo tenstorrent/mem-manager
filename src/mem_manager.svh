@@ -4,15 +4,15 @@
     `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,check,input)
 
 `define MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,NAME,IO)                                                                                           \
-    import "DPI-C" mem_manager_``NAME = function void wrap_mem_manager_``NAME``_``SIZE (mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);  \
-    function void mem_manager_``NAME``_``SIZE(mm_t mm, addr_t addr, IO datum_t data[SIZE]);                                                       \
-        wrap_mem_manager_``NAME``_``SIZE(mm, addr, SIZE, data);                                                                                   \
+    import "DPI-C" function void mem_manager_``NAME``_``SIZE (mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);  \
+    function void NAME``_``SIZE(mm_t mm, addr_t addr, IO datum_t data[SIZE]);                                                       \
+        mem_manager_``NAME``_``SIZE(mm, addr, SIZE, data);                                                                                   \
     endfunction                                                                                                                                   \
                                                                                                                                                   \
-    function void mem_manager_``NAME``_``SIZE``_sized(mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);                                    \
-        assert (size <= SIZE) else $error("size %0d bigger than SIZE", size);                                                                     \
+    function void NAME``_``SIZE``_sized(mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);                                    \
+        check_size: assert (size <= SIZE) else $error("size %0d bigger than SIZE", size);                                                                     \
         if (size <= SIZE) begin                                                                                                                   \
-            wrap_mem_manager_``NAME``_``SIZE(mm, addr, SIZE, data);                                                                               \
+            mem_manager_``NAME``_``SIZE(mm, addr, size, data);                                                                               \
         end                                                                                                                                       \
     endfunction
 
@@ -23,10 +23,10 @@ package mem_manager;
     typedef longint unsigned sz_t    ;
     typedef byte    unsigned datum_t ;
 
-    import "DPI-C" function chandle mem_manager_create            ();
-    import "DPI-C" function void    mem_manager_destroy           (mm_t mm);
-    import "DPI-C" function void    mem_manager_load_ELF          (mm_t mm, string filename);
-    import "DPI-C" function void    mem_manager_load_verilog_hex  (mm_t mm, string filename);
+    import "DPI-C" mem_manager_create           = function chandle create            ();
+    import "DPI-C" mem_manager_destroy          = function void    destroy           (mm_t mm);
+    import "DPI-C" mem_manager_load_ELF         = function void    load_ELF          (mm_t mm, string filename);
+    import "DPI-C" mem_manager_load_verilog_hex = function void    load_verilog_hex  (mm_t mm, string filename);
 
     `MEM_MANAGER_IMPORT_SIZED_FUNCTIONS(1)
     `MEM_MANAGER_IMPORT_SIZED_FUNCTIONS(2)
