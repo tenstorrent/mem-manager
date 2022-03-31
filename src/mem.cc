@@ -57,3 +57,23 @@ void mem::load_verilog_hex(const std::string& filename) {
         write(addr, data);
     }
 }
+
+mem::data_t mem::read(addr_t addr, sz_t size) {
+
+    data_t data(size);
+    read(addr, size, data.data());
+    return data;
+
+}
+
+void mem::write(addr_t addr, const data_t& data) {
+
+    write(addr, data.size(), data.data());
+
+}
+
+bool mem::check(addr_t addr, const data_t& data) const {
+
+    return check(addr, data.size(), data.data());
+
+}

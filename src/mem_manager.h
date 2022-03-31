@@ -1,3 +1,5 @@
+#pragma once
+
 #include "sparse_mem.h"
 
 extern "C" {

@@ -2,40 +2,40 @@
 
 sparse_mem::sparse_mem() {}
 
-sparse_mem::data_t sparse_mem::read(addr_t addr, sz_t size) {
-
-    data_t data(size);
-    readt(addr, size, std::begin(data));
-    return data;
-
-}
-
 void sparse_mem::read(addr_t addr, sz_t size, datum_t* data) {
 
-    readt(addr, size, data);
+    struct gen {
+        decltype(mem_)& mem;
+        addr_t addr;
+        gen(decltype(mem)& m, addr_t a) : mem(m), addr(a) {}
+        datum_t operator()() {
+            return mem[addr++];
+        }
+    };
 
-}
-
-void sparse_mem::write(addr_t addr, const data_t& data) {
-
-    writet(addr, data.size(), std::cbegin(data));
+    std::generate_n(data, size, gen(mem_, addr));
 
 }
 
 void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data) {
 
-    writet(addr, size, data);
-
-}
-
-bool sparse_mem::check(addr_t addr, const data_t& data) const {
-
-    return checkt(addr, data.size(), std::cbegin(data));
+    for (sz_t s = 0; s < size; s++) {
+        mem_[addr + s] = *data;
+        data++;
+    }
 
 }
 
 bool sparse_mem::check(addr_t addr, sz_t size, const datum_t* data) const {
 
-    return checkt(addr, size, data);
+    for (sz_t s = 0; s < size; s++) {
+        auto it = mem_.find(addr++);
+        if(it == mem_.end() || it->second != *data) {
+            return false;
+        }
+        data++;
+    }
+
+    return true;
 
 }
