@@ -41,12 +41,12 @@ void mem::load_verilog_hex(const std::string& filename) {
             addr_found = true;
         } else {
             if (!addr_found) {
-                std::runtime_error("Couldn't parse " + filename);
+                throw std::runtime_error("Couldn't parse " + filename);
             }
 
             unsigned long long d = std::strtoull(s.c_str(), nullptr, 16);
             if (d > std::numeric_limits<datum_t>::max()) {
-                std::runtime_error("Invalid value " + s);
+                throw std::runtime_error("Invalid value " + s);
             }
 
             data.push_back(d);

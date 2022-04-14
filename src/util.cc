@@ -30,8 +30,8 @@ std::string util::exec_check(const char* cmd) {
     std::string result;
     std::tie(exit, result) = exec(cmd);
 
-    if (!WEXITSTATUS(exit)) {
-        std::runtime_error(std::string("`") + cmd + "` exited with " + std::to_string(exit));
+    if (WEXITSTATUS(exit)) {
+        throw std::runtime_error(std::string("`") + cmd + "` exited with " + std::to_string(exit));
     }
 
     return result;
