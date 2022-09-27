@@ -24,7 +24,7 @@ http_archive(
   name = "rules_hdl",
   sha256 = "775ae2ee907f8101ad183577a225a984cd25a4dd03e6826f0df509d4902db392",
   strip_prefix = "bazel_rules_hdl-{commit}".format(commit=rules_hdl_hash),
-  url = "https://aus-gitlab.local.tenstorrent.com/vkoyyalagunta/bazel_rules_hdl/-/archive/{commit}/bazel_rules_hdl-{commit}.tar.bz2".format(commit=rules_hdl_hash),
+  url = "https://aus-gitlab.local.tenstorrent.com/riscv/bazel_rules_hdl/-/archive/{commit}/bazel_rules_hdl-{commit}.tar.bz2".format(commit=rules_hdl_hash),
 )
 
 rules_verilator_hash="49b7e16f32c14698e35da2214eaf5ea1ebe86bc1"
@@ -32,7 +32,7 @@ http_archive(
   name = "rules_verilator",
   sha256 = "307c5b6c27822f654a5a8dbb2d5271a5f0ac727bd86b49565d2c630a4b20f6c2",
   strip_prefix = "rules_verilator-{commit}".format(commit=rules_verilator_hash),
-  url = "https://aus-gitlab.local.tenstorrent.com/vkoyyalagunta/rules_verilator/-/archive/{commit}/rules_verilator-{commit}.tar.bz2".format(commit=rules_verilator_hash),
+  url = "https://aus-gitlab.local.tenstorrent.com/riscv/rules_verilator/-/archive/{commit}/rules_verilator-{commit}.tar.bz2".format(commit=rules_verilator_hash),
 )
 
 load(
