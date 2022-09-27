@@ -1,5 +1,5 @@
 image:
-    name: yyz-gitlab.local.tenstorrent.com:5005/riscv/dv/mem-manager/mem-manager:c0f23d5b805db6b377d1ec5b1eb7e53315871cf6cdb0cbd4769255c14ba1e210
+    name: aus-gitlab.local.tenstorrent.com:5005/riscv/dv/mem-manager/mem-manager:c0f23d5b805db6b377d1ec5b1eb7e53315871cf6cdb0cbd4769255c14ba1e210
 
 stages:
     - test
