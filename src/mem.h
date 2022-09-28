@@ -3,6 +3,7 @@
 #include <cinttypes>
 #include <vector>
 #include <string>
+#include <functional>
 
 class mem { 
 
@@ -12,6 +13,14 @@ class mem {
         typedef std::uint64_t        sz_t   ;
         typedef std::uint8_t         datum_t;
         typedef std::vector<datum_t> data_t ;
+
+    private:
+
+        static data_t uninitialized_cb_default(addr_t, sz_t size) { return data_t(size); }
+
+        std::function<data_t(addr_t, sz_t)> uninitialized_cb_ = uninitialized_cb_default;
+
+    public:
 
         virtual void read (addr_t addr, sz_t size,       datum_t* data)       =0;
         //TODO byte-enabled version
@@ -26,6 +35,12 @@ class mem {
         void   load_ELF(const std::string& filename);
         void   load_verilog_hex(const std::string& filename);
 
+        void   uninitialized_read_data_cb(decltype(uninitialized_cb_) cb) { uninitialized_cb_ = cb; }
+
         virtual ~mem() {}
+
+    protected:
+
+        data_t uninitialized_read(addr_t addr, sz_t size) { return uninitialized_cb_(addr, size); }
 
 };

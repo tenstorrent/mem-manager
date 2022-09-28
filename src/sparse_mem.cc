@@ -5,15 +5,20 @@ sparse_mem::sparse_mem() {}
 void sparse_mem::read(addr_t addr, sz_t size, datum_t* data) {
 
     struct gen {
-        decltype(mem_)& mem;
+        sparse_mem& s;
         addr_t addr;
-        gen(decltype(mem)& m, addr_t a) : mem(m), addr(a) {}
+        gen(sparse_mem& s, addr_t a) : s(s), addr(a) {}
         datum_t operator()() {
-            return mem[addr++];
+            auto it = s.mem_.find(addr);
+            if (it == s.mem_.end()) {
+                it = s.mem_.emplace(addr, s.uninitialized_read(addr, 1).at(0)).first;
+            }
+            addr++;
+            return it->second;
         }
     };
 
-    std::generate_n(data, size, gen(mem_, addr));
+    std::generate_n(data, size, gen(*this, addr));
 
 }
 

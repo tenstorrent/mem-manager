@@ -24,6 +24,31 @@ TEST(Mem, WritingReading) {
 
 }
 
+TEST(Mem, ReadingUninitialized) {
+
+    mem_manager mm;
+    mm.uninitialized_read_data_cb(
+        [](mem_manager::addr_t addr, mem_manager::sz_t size) {
+            mem_manager::data_t data(size);
+            struct gen {
+                mem_manager::addr_t addr;
+                gen(addr_t addr) : addr(addr) {};
+                datum_t operator()() {
+                    datum_t d[] = {0xde, 0xad, 0xbe, 0xef};
+                    return d[addr++ % (sizeof(d)/sizeof(d[0]))];
+                }
+            };
+            std::generate(data.begin(), data.end(), gen(addr));
+            return data;
+        }
+    );
+    mm.write(0x3, mem_manager::data_t{{0xca, 0xfe}});
+
+    mem_manager::data_t expected{{0xfe, 0xad, 0xbe}};
+    EXPECT_EQ(expected, mm.read(0x4, 3));
+
+}
+
 TEST(Mem, SVBindings) {
 
     Vmem_manager_test top;
