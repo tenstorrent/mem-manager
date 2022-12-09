@@ -34,7 +34,7 @@ extern "C" {
 
     }
 
-    bool mem_manager_check           (mem_manager* mm, addr_t addr, sz_t size, datum_t* data) {
+    std::uint8_t mem_manager_check           (mem_manager* mm, addr_t addr, sz_t size, datum_t* data) {
 
         return mm->check(addr, size, data);
 
