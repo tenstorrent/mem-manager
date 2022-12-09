@@ -1,31 +1,21 @@
+`define _MEM_MANAGER_RETURN_void
+`define _MEM_MANAGER_RETURN_byte return
+
 `define MEM_MANAGER_IMPORT_SIZED_FUNCTIONS(SIZE)         \
-    `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,read,output) \
-    `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,write,input) \
-    `MEM_MANAGER_IMPORT_SIZED_CHECK_FUNCTION(SIZE,check,input)
+    `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,read,output, void) \
+    `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,write,input, void) \
+    `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,check,input, byte)
 
-`define MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,NAME,IO)                                                                                           \
-    import "DPI-C" function void mem_manager_``NAME``_``SIZE (mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);  \
-    function void NAME``_``SIZE(mm_t mm, addr_t addr, IO datum_t data[SIZE]);                                                       \
-        mem_manager_``NAME``_``SIZE(mm, addr, SIZE, data);                                                                                   \
+`define MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,NAME,IO,RETURN)                                                                                           \
+    import "DPI-C" function RETURN mem_manager_``NAME``_``SIZE (mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);  \
+    function RETURN NAME``_``SIZE(mm_t mm, addr_t addr, IO datum_t data[SIZE]);                                                       \
+        `_MEM_MANAGER_RETURN_``RETURN mem_manager_``NAME``_``SIZE(mm, addr, SIZE, data);                                                                                   \
     endfunction                                                                                                                                   \
                                                                                                                                                   \
-    function void NAME``_``SIZE``_sized(mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);                                    \
+    function RETURN NAME``_``SIZE``_sized(mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);                                    \
         check_size: assert (size <= SIZE) else $error("size %0d bigger than SIZE", size);                                                                     \
         if (size <= SIZE) begin                                                                                                                   \
-            mem_manager_``NAME``_``SIZE(mm, addr, size, data);                                                                               \
-        end                                                                                                                                       \
-    endfunction
-
-`define MEM_MANAGER_IMPORT_SIZED_CHECK_FUNCTION(SIZE,NAME,IO)                                                                                           \
-    import "DPI-C" function bit mem_manager_``NAME``_``SIZE (mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);  \
-    function bit NAME``_``SIZE(mm_t mm, addr_t addr, IO datum_t data[SIZE]);                                                       \
-        return mem_manager_``NAME``_``SIZE(mm, addr, SIZE, data);                                                                                   \
-    endfunction                                                                                                                                   \
-                                                                                                                                                  \
-    function bit NAME``_``SIZE``_sized(mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);                                    \
-        check_size: assert (size <= SIZE) else $error("size %0d bigger than SIZE", size);                                                                     \
-        if (size <= SIZE) begin                                                                                                                   \
-            return mem_manager_``NAME``_``SIZE(mm, addr, size, data);                                                                               \
+            `_MEM_MANAGER_RETURN_``RETURN mem_manager_``NAME``_``SIZE(mm, addr, size, data);                                                                               \
         end                                                                                                                                       \
     endfunction
 
@@ -54,5 +44,7 @@ package mem_manager;
 
 endpackage
 
+`undef _MEM_MANAGER_RETURN_void
+`undef _MEM_MANAGER_RETURN_bit
 `undef MEM_MANAGER_IMPORT_SIZED_FUNCTIONS
 `undef MEM_MANAGER_IMPORT_SIZED_FUNCTION
