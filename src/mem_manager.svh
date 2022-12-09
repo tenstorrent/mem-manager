@@ -1,7 +1,7 @@
 `define MEM_MANAGER_IMPORT_SIZED_FUNCTIONS(SIZE)         \
     `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,read,output) \
     `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,write,input) \
-    `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,check,input)
+    `MEM_MANAGER_IMPORT_SIZED_CHECK_FUNCTION(SIZE,check,input)
 
 `define MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,NAME,IO)                                                                                           \
     import "DPI-C" function void mem_manager_``NAME``_``SIZE (mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);  \
@@ -13,6 +13,19 @@
         check_size: assert (size <= SIZE) else $error("size %0d bigger than SIZE", size);                                                                     \
         if (size <= SIZE) begin                                                                                                                   \
             mem_manager_``NAME``_``SIZE(mm, addr, size, data);                                                                               \
+        end                                                                                                                                       \
+    endfunction
+
+`define MEM_MANAGER_IMPORT_SIZED_CHECK_FUNCTION(SIZE,NAME,IO)                                                                                           \
+    import "DPI-C" function bit mem_manager_``NAME``_``SIZE (mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);  \
+    function bit NAME``_``SIZE(mm_t mm, addr_t addr, IO datum_t data[SIZE]);                                                       \
+        return mem_manager_``NAME``_``SIZE(mm, addr, SIZE, data);                                                                                   \
+    endfunction                                                                                                                                   \
+                                                                                                                                                  \
+    function bit NAME``_``SIZE``_sized(mm_t mm, addr_t addr, sz_t size, IO datum_t data[SIZE]);                                    \
+        check_size: assert (size <= SIZE) else $error("size %0d bigger than SIZE", size);                                                                     \
+        if (size <= SIZE) begin                                                                                                                   \
+            return mem_manager_``NAME``_``SIZE(mm, addr, size, data);                                                                               \
         end                                                                                                                                       \
     endfunction
 

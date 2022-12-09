@@ -34,9 +34,9 @@ extern "C" {
 
     }
 
-    void mem_manager_check           (mem_manager* mm, addr_t addr, sz_t size, datum_t* data) {
+    bool mem_manager_check           (mem_manager* mm, addr_t addr, sz_t size, datum_t* data) {
 
-        mm->check(addr, size, data);
+        return mm->check(addr, size, data);
 
     }
 
@@ -57,10 +57,15 @@ extern "C" {
         mem_manager_##NAME(mm, addr, size, data);                                      \
     }
 
+#define ALIAS_NAME_SIZED_CHECK(NAME, SIZE)                                                   \
+    bool mem_manager_##NAME##_##SIZE (mem_manager* mm, addr_t addr, sz_t size, datum_t* data) { \
+        return mem_manager_##NAME(mm, addr, size, data);                                      \
+    }
+
 #define ALIAS_SIZED(SIZE)         \
     ALIAS_NAME_SIZED(read, SIZE)  \
     ALIAS_NAME_SIZED(write, SIZE) \
-    ALIAS_NAME_SIZED(check, SIZE)
+    ALIAS_NAME_SIZED_CHECK(check, SIZE)
 
 ALIAS_SIZED(1)
 ALIAS_SIZED(2)
