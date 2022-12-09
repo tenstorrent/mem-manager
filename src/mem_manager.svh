@@ -45,6 +45,6 @@ package mem_manager;
 endpackage
 
 `undef _MEM_MANAGER_RETURN_void
-`undef _MEM_MANAGER_RETURN_bit
+`undef _MEM_MANAGER_RETURN_byte
 `undef MEM_MANAGER_IMPORT_SIZED_FUNCTIONS
 `undef MEM_MANAGER_IMPORT_SIZED_FUNCTION
