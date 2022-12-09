@@ -7,4 +7,4 @@ stages:
 test:
     stage: test
     script:
-        - bazel test test:all --test_output=all
+        - bazel --output_user_root=./bazel_output_user_root test test:all --test_output=all
