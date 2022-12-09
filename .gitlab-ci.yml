@@ -8,3 +8,5 @@ test:
     stage: test
     script:
         - bazel --output_user_root=./bazel_output_user_root test test:all --test_output=all
+    after_script:
+        - chmod +w -R ./bazel_output_user_root
