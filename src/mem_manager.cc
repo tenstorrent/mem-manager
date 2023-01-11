@@ -22,9 +22,9 @@ extern "C" {
 
     }
 
-    void mem_manager_read            (mem_manager* mm, addr_t addr, sz_t size, datum_t* data) {
+    std::uint8_t mem_manager_read            (mem_manager* mm, addr_t addr, sz_t size, datum_t* data) {
 
-        mm->read(addr, size, data);
+        return mm->read(addr, size, data);
 
     }
 
@@ -58,7 +58,7 @@ extern "C" {
     }
 
 #define ALIAS_SIZED(SIZE)         \
-    ALIAS_NAME_SIZED(read, SIZE, void)  \
+    ALIAS_NAME_SIZED(read, SIZE, std::uint8_t)  \
     ALIAS_NAME_SIZED(write, SIZE, void) \
     ALIAS_NAME_SIZED(check, SIZE, std::uint8_t)
 

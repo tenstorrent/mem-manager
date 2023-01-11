@@ -2,7 +2,7 @@
 `define _MEM_MANAGER_RETURN_byte return
 
 `define MEM_MANAGER_IMPORT_SIZED_FUNCTIONS(SIZE)         \
-    `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,read,output, void) \
+    `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,read,output, byte) \
     `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,write,input, void) \
     `MEM_MANAGER_IMPORT_SIZED_FUNCTION(SIZE,check,input, byte)
 
