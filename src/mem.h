@@ -22,7 +22,7 @@ class mem {
 
     public:
 
-        virtual void read (addr_t addr, sz_t size,       datum_t* data)       =0;
+        virtual bool read (addr_t addr, sz_t size,       datum_t* data)       =0;
         //TODO byte-enabled version
         virtual void write(addr_t addr, sz_t size, const datum_t* data)       =0;
         virtual bool check(addr_t addr, sz_t size, const datum_t* data) const =0;

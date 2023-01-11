@@ -14,7 +14,7 @@ class sparse_mem : public mem {
         using mem::write;
         using mem::check;
 
-        void read (addr_t addr, sz_t size,       datum_t* data)       override;
+        bool read (addr_t addr, sz_t size,       datum_t* data)       override;
         void write(addr_t addr, sz_t size, const datum_t* data)       override;
         bool check(addr_t addr, sz_t size, const datum_t* data) const override;
 
