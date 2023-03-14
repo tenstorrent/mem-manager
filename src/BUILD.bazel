@@ -5,14 +5,14 @@ cc_library(
     hdrs = ["mem_manager.h"],
     srcs = glob(include = ["*.cc", "*.h"], exclude = ["mem_manager.h"]),
     includes = ["."],
+    alwayslink = True,
+    linkstatic = True,
     visibility = ["//:__pkg__"],
 )
 
 cc_library(
     name = "mem_manager_dpi",
     deps = ["mem_manager"],
-    alwayslink = True,
-    linkstatic = True,
     visibility = ["//:__pkg__"],
 )
 
