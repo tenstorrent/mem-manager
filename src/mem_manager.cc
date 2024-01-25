@@ -52,6 +52,13 @@ extern "C" {
 
     }
 
+    void mem_manager_load_lz4(mem_manager* mm, const char* filename) {
+
+        mm->load_lz4(filename);
+
+    }
+
+
 #define ALIAS_NAME_SIZED(NAME, SIZE, RETURN)                                                   \
     RETURN mem_manager_##NAME##_##SIZE (mem_manager* mm, addr_t addr, sz_t size, datum_t* data) { \
         return mem_manager_##NAME(mm, addr, size, data);                                      \

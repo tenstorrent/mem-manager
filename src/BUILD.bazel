@@ -8,6 +8,7 @@ cc_library(
     alwayslink = True,
     linkstatic = True,
     visibility = ["//:__pkg__"],
+    linkopts = ["-llz4"],
 )
 
 cc_library(

@@ -30,6 +30,7 @@ package mem_manager;
     import "DPI-C" mem_manager_destroy          = function void    destroy           (mm_t mm);
     import "DPI-C" mem_manager_load_ELF         = function void    load_ELF          (mm_t mm, string filename);
     import "DPI-C" mem_manager_load_verilog_hex = function void    load_verilog_hex  (mm_t mm, string filename);
+    import "DPI-C" mem_manager_load_lz4         = function void    load_lz4          (mm_t mm, string filename);
 
     `MEM_MANAGER_IMPORT_SIZED_FUNCTIONS(1)
     `MEM_MANAGER_IMPORT_SIZED_FUNCTIONS(2)

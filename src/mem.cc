@@ -6,6 +6,13 @@
 #include <functional>
 #include <fstream>
 #include <limits>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <lz4frame.h>
 
 void mem::load_ELF(const std::string& filename) {
 
@@ -56,6 +63,81 @@ void mem::load_verilog_hex(const std::string& filename) {
     if (addr_found) {
         write(addr, data);
     }
+}
+
+void *mem::mmap_file(const std::string& filename, size_t& length) {
+    int fd;
+    struct stat sbuf;
+    void *src;
+
+    fd = open(filename.c_str(), O_RDONLY);
+    if (fd == -1) {
+        throw std::runtime_error("Couldn't open " + filename);
+    }
+
+    if (fstat(fd, &sbuf) == -1) {
+        throw std::runtime_error("Couldn't fstat " + filename);
+    }
+    length = sbuf.st_size;
+
+    src = mmap(0, length, PROT_READ, MAP_SHARED, fd, 0);
+    if (src == MAP_FAILED) {
+        close(fd);
+        throw std::runtime_error("Couldn't mmap " + filename);
+    }
+
+    close(fd);
+
+    return src;
+}
+
+void mem::process(uint8_t *data, ssize_t addr, size_t length) {
+    while (length--) {
+        if (*data) {
+            write(addr, 1, data);
+        }
+        addr++;
+        data++;
+    }
+}
+
+#define BLOCK_SIZE (4*1024*1024)
+
+void mem::load_lz4(const std::string& filename) {
+    LZ4F_dctx *dctx;
+    LZ4F_errorCode_t ret;
+    uint8_t *src;
+    uint8_t *dst;
+    size_t src_size;
+    size_t dst_size;
+    ssize_t addr = 0;
+
+    src = (uint8_t *)mmap_file(filename, src_size);
+
+    dst_size = BLOCK_SIZE;
+    dst = (uint8_t *)malloc(dst_size);
+
+    ret = LZ4F_createDecompressionContext(&dctx, LZ4F_VERSION);
+    if (LZ4F_isError(ret)) {
+        throw std::runtime_error("Couldn't initialize LZ4 context");
+    }
+
+    while (src_size) {
+        size_t src_bytes_read = src_size;
+        size_t dst_bytes_written = dst_size;
+
+        size_t ret = LZ4F_decompress(dctx, dst, &dst_bytes_written, src, &src_bytes_read, NULL);
+        if (LZ4F_isError(ret)) {
+            throw std::runtime_error("LZ4F_decompress failed");
+        }
+        process(dst, addr, dst_bytes_written);
+        src = src + src_bytes_read;
+        src_size = src_size - src_bytes_read;
+        addr = addr + src_bytes_read;
+    }
+
+    munmap(src, src_size);
+    free(dst);
 }
 
 mem::data_t mem::read(addr_t addr, sz_t size) {

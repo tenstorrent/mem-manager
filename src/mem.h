@@ -20,6 +20,9 @@ class mem {
 
         std::function<data_t(addr_t, sz_t)> uninitialized_cb_ = uninitialized_cb_default;
 
+        void *mmap_file(const std::string& filename, size_t& length);
+        void process(uint8_t *data, ssize_t addr, size_t length);
+
     public:
 
         virtual bool read (addr_t addr, sz_t size,       datum_t* data)       =0;
@@ -34,6 +37,7 @@ class mem {
 
         void   load_ELF(const std::string& filename);
         void   load_verilog_hex(const std::string& filename);
+        void   load_lz4(const std::string& filename);
 
         void   uninitialized_read_data_cb(decltype(uninitialized_cb_) cb) { uninitialized_cb_ = cb; }
 
