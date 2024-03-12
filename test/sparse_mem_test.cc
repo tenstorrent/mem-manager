@@ -84,7 +84,7 @@ TEST(Mem, CBindings) {
             EXPECT_EQ(it.second[s], data[s]);
         }
 
-        delete data;
+        delete[] data;
     }
 
     mem_manager_destroy(mm);
