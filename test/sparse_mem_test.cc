@@ -91,7 +91,7 @@ TEST(Mem, CBindings) {
 
 }
 
-TEST(Mem, ElfLoading) {
+static std::string get_runfile(const char* s) {
 
     using bazel::tools::cpp::runfiles::Runfiles;
     std::string error;
@@ -99,13 +99,14 @@ TEST(Mem, ElfLoading) {
 
     EXPECT_TRUE(runfiles);
 
-    std::string elf = runfiles->Rlocation("__main__/test/arith.riscv");
+    std::string file = runfiles->Rlocation(s);
 
-    EXPECT_NE(elf, "");
+    EXPECT_NE(file, "");
 
-    mem_manager mm;
-    mm.load_ELF(elf);
+    return file;
+}
 
+static void check_mem(mem_manager& mm) {
     mem_manager::data_t data{{
 0x03, 0x2d, 0x81, 0x06, 0x83, 0x2d, 0xc1, 0x06, 0x03, 0x2e, 0x01, 0x07, 0x83, 0x2e, 0x41, 0x07, 0x03, 0x2f, 0x81, 0x07, 0x83, 0x2f, 0xc1, 0x07, 0x13, 0x01, 0xc1, 0x07, 0x73, 0x00, 0x20, 0x30, 0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     }};
@@ -115,4 +116,16 @@ TEST(Mem, ElfLoading) {
     EXPECT_TRUE(mm.check(0x80000000 + 0x147c -1, {0}));
     EXPECT_EQ(mm.read(0x80000000 + 0x147c, 1), mem_manager::data_t{0});
     EXPECT_TRUE(mm.check(0x80000000 + 0x147c, {0}));
+}
+
+TEST(Mem, ElfLoading) {
+    mem_manager mm;
+    mm.load_ELF(get_runfile("__main__/test/arith.riscv"));
+    check_mem(mm);
+}
+
+TEST(Mem, VerilogHexLoading) {
+    mem_manager mm;
+    mm.load_verilog_hex(get_runfile("__main__/test/arith.hex"));
+    check_mem(mm);
 }

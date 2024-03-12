@@ -26,6 +26,7 @@ cc_test(
     srcs = ["sparse_mem_test.cc"],
     data = [
         "arith.riscv",
+        "arith.hex",
     ],
     deps = [
         "//:mem_manager",
