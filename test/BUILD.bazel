@@ -20,12 +20,12 @@ verilator_cc_library(
     vopts = ['--assert'],
 )
 
-cc_test(
+cc_binary(
     name = "sparse_mem_test",
-    size = "small",
     srcs = ["sparse_mem_test.cc"],
     data = [
         "arith.riscv",
+        "arith.hex",
     ],
     deps = [
         "//:mem_manager",
@@ -34,4 +34,10 @@ cc_test(
         "@bazel_tools//tools/cpp/runfiles",
     ],
     linkopts = ["-lz"],
+)
+
+sh_test(
+    name = "sparse_mem_test_test",
+    srcs = [":sparse_mem_test"],
+    size = "small",
 )
