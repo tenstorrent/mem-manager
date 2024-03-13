@@ -133,7 +133,7 @@ void mem::load_lz4(const std::string& filename) {
         process(dst, addr, dst_bytes_written);
         src = src + src_bytes_read;
         src_size = src_size - src_bytes_read;
-        addr = addr + src_bytes_read;
+        addr = addr + dst_bytes_written;
     }
 
     munmap(src, src_size);
