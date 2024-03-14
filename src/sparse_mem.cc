@@ -33,13 +33,21 @@ void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data) {
 
 }
 
-bool sparse_mem::check(addr_t addr, sz_t size, const datum_t* data) const {
+bool sparse_mem::check(addr_t addr, sz_t size, const datum_t* data, bool allow_uninitialized) const {
 
     for (sz_t s = 0; s < size; s++) {
-        auto it = mem_.find(addr++);
-        if(it == mem_.end() || it->second != *data) {
+        auto it = mem_.find(addr);
+
+        if (it == mem_.end()) {
+            if (!allow_uninitialized || uninitialized_read(addr, 1).at(0) != *data) {
+                return false;
+            }
+        }
+        else if(it->second != *data) {
             return false;
         }
+
+        addr++;
         data++;
     }
 

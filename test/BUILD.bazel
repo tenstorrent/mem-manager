@@ -20,12 +20,20 @@ verilator_cc_library(
     vopts = ['--assert'],
 )
 
+genrule(
+   name  = "arith_bin_lz4",
+   srcs  = ["arith.bin.lz4.gz"],
+   outs  = ["arith.bin.lz4"],
+   cmd   = "gunzip < $< > $@",
+)
+
 cc_binary(
     name = "sparse_mem_test",
     srcs = ["sparse_mem_test.cc"],
     data = [
         "arith.riscv",
         "arith.hex",
+        "arith.bin.lz4",
     ],
     deps = [
         "//:mem_manager",

@@ -25,15 +25,15 @@ class mem {
 
     public:
 
-        virtual bool read (addr_t addr, sz_t size,       datum_t* data)       =0;
+        virtual bool read (addr_t addr, sz_t size,       datum_t* data                                  )       =0;
         //TODO byte-enabled version
-        virtual void write(addr_t addr, sz_t size, const datum_t* data)       =0;
-        virtual bool check(addr_t addr, sz_t size, const datum_t* data) const =0;
+        virtual void write(addr_t addr, sz_t size, const datum_t* data                                  )       =0;
+        virtual bool check(addr_t addr, sz_t size, const datum_t* data, bool allow_uninitialized = false) const =0;
 
         // C++ versions
         data_t read (addr_t addr, sz_t size);
         void   write(addr_t addr, const data_t& data);
-        bool   check(addr_t addr, const data_t& data) const;
+        bool   check(addr_t addr, const data_t& data, bool allow_unininitialized = false) const;
 
         void   load_ELF(const std::string& filename);
         void   load_verilog_hex(const std::string& filename);
@@ -45,6 +45,6 @@ class mem {
 
     protected:
 
-        data_t uninitialized_read(addr_t addr, sz_t size) { return uninitialized_cb_(addr, size); }
+        data_t uninitialized_read(addr_t addr, sz_t size) const { return uninitialized_cb_(addr, size); }
 
 };

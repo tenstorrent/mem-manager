@@ -154,8 +154,8 @@ void mem::write(addr_t addr, const data_t& data) {
 
 }
 
-bool mem::check(addr_t addr, const data_t& data) const {
+bool mem::check(addr_t addr, const data_t& data, bool allow_unininitialized) const {
 
-    return check(addr, data.size(), data.data());
+    return check(addr, data.size(), data.data(), allow_unininitialized);
 
 }
