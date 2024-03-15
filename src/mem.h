@@ -20,7 +20,6 @@ class mem {
 
         std::function<data_t(addr_t, sz_t)> uninitialized_cb_ = uninitialized_cb_default;
 
-        void *mmap_file(const std::string& filename, size_t& length);
         void process(uint8_t *data, ssize_t addr, size_t length);
 
     public:
