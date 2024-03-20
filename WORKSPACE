@@ -19,20 +19,20 @@ http_archive(
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 bazel_skylib_workspace()
 
-rules_hdl_hash="dbca9e91f08d7e32f22279783916874077b64e36"
+rules_hdl_hash="9567241a57843bf95710c30f3109e052baafaed5"
 http_archive(
-  name = "rules_hdl",
-  sha256 = "775ae2ee907f8101ad183577a225a984cd25a4dd03e6826f0df509d4902db392",
-  strip_prefix = "bazel_rules_hdl-{commit}".format(commit=rules_hdl_hash),
-  url = "https://aus-gitlab.local.tenstorrent.com/riscv/bazel_rules_hdl/-/archive/{commit}/bazel_rules_hdl-{commit}.tar.bz2".format(commit=rules_hdl_hash),
+    name = "rules_hdl",
+    sha256 = "9a663eb17b384187e99527b0a0c49e328f91839a30c437066b519ba8867baa91",
+    strip_prefix = "bazel_rules_hdl-{commit}".format(commit=rules_hdl_hash),
+    url = "https://aus-gitlab.local.tenstorrent.com/riscv/bazel_rules_hdl/-/archive/{commit}/bazel_rules_hdl-{commit}.tar.bz2".format(commit=rules_hdl_hash),
 )
 
-rules_verilator_hash="49b7e16f32c14698e35da2214eaf5ea1ebe86bc1"
+rules_verilator_hash="eb84b04c04b5aa6e887149214c96f135a55c21cb"
 http_archive(
-  name = "rules_verilator",
-  sha256 = "307c5b6c27822f654a5a8dbb2d5271a5f0ac727bd86b49565d2c630a4b20f6c2",
-  strip_prefix = "rules_verilator-{commit}".format(commit=rules_verilator_hash),
-  url = "https://aus-gitlab.local.tenstorrent.com/riscv/rules_verilator/-/archive/{commit}/rules_verilator-{commit}.tar.bz2".format(commit=rules_verilator_hash),
+    name = "rules_verilator",
+    sha256 = "a52575cca1bc2a5ec87a06d159777647ee3cf7d81bf617db8655865dd8037cf5",
+    strip_prefix = "rules_verilator-{commit}".format(commit=rules_verilator_hash),
+    url = "https://aus-gitlab.local.tenstorrent.com/riscv/rules_verilator/-/archive/{commit}/rules_verilator-{commit}.tar.bz2".format(commit=rules_verilator_hash),
 )
 
 load(
@@ -48,7 +48,7 @@ load("@rules_m4//m4:m4.bzl", "m4_register_toolchains")
 m4_register_toolchains()
 
 load("@rules_flex//flex:flex.bzl", "flex_register_toolchains")
-flex_register_toolchains()
+flex_register_toolchains(extra_copts=["-Wno-error=misleading-indentation", "-Wno-error=pointer-sign"])
 
 load("@rules_bison//bison:bison.bzl", "bison_register_toolchains")
-bison_register_toolchains()
+bison_register_toolchains(extra_copts=["-Wno-error=misleading-indentation", "-Wno-error=sign-compare", "-Wno-error=unused-parameter", "-Wno-error=unused-but-set-variable"])

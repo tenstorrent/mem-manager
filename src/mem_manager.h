@@ -18,6 +18,7 @@ extern "C" {
     std::uint8_t mem_manager_check   (mem_manager* mm, addr_t addr, sz_t size, datum_t* data);
     void mem_manager_load_ELF        (mem_manager* mm, const char* filename);
     void mem_manager_load_verilog_hex(mem_manager* mm, const char* filename);
+    void mem_manager_load_lz4        (mem_manager* mm, const char* filename);
 }
 
 class mem_manager : public sparse_mem {
