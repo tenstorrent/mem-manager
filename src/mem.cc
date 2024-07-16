@@ -176,7 +176,7 @@ void mem::process(uint8_t *data, ssize_t addr, size_t length) {
     }
 }
 
-void mem::load_lz4(const std::string& filename) {
+void mem::load_lz4(const std::string& filename, addr_t offset) {
     const size_t BLOCK_SIZE = 4*1024*1024;
 
     ::mmapped_file mmapped_file(filename);
@@ -202,7 +202,7 @@ void mem::load_lz4(const std::string& filename) {
         if (LZ4F_isError(ret)) {
             throw std::runtime_error("LZ4F_decompress failed");
         }
-        process(dst, addr, dst_bytes_written);
+        process(dst, addr+offset, dst_bytes_written);
         src = src + src_bytes_read;
         src_size = src_size - src_bytes_read;
         addr = addr + dst_bytes_written;
