@@ -36,7 +36,7 @@ class mem {
 
         void   load_ELF(const std::string& filename);
         void   load_verilog_hex(const std::string& filename);
-        void   load_lz4(const std::string& filename);
+        void   load_lz4(const std::string& filename, addr_t offset = 0);
 
         void   uninitialized_read_data_cb(decltype(uninitialized_cb_) cb) { uninitialized_cb_ = cb; }
 
