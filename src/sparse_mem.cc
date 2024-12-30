@@ -33,17 +33,6 @@ bool sparse_mem::read(addr_t addr, sz_t size, datum_t* data) {
 
 void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data, const mem::write_options* opt) {
 
-    if (unpaged()) {
-        for (sz_t s = 0; s < size; s++, data++) {
-            if (!opt->skip_zero || *data) {
-                unpaged_[addr + s] = *data;
-            }
-        }
-
-        return;
-    }
-
-
     for (sz_t s = 0; s < size;) {
         if (opt->skip_zero) {
             auto it = std::find_if(data, data + size, [](const datum_t& d) { return d != 0; });
