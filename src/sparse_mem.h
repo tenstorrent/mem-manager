@@ -16,16 +16,16 @@ class sparse_mem : public mem {
         using mem::write;
         using mem::check;
 
-        bool read (addr_t addr, sz_t size,       datum_t* data                                    )       override;
-        void write(addr_t addr, sz_t size, const datum_t* data, const mem::write_options* opt =  &mem::write_options_default                                    )       override;
-        bool check(addr_t addr, sz_t size, const datum_t* data, bool allow_unininitialized = false) const override;
+        bool read (addr_t addr, sz_t size,       datum_t* data                                                              )       override;
+        void write(addr_t addr, sz_t size, const datum_t* data, const mem::write_options* opt =  &mem::write_options_default)       override;
+        bool check(addr_t addr, sz_t size, const datum_t* data, bool allow_unininitialized = false                          ) const override;
 
     private:
 
         std::unordered_map<addr_t, data_t > pages_;
         std::unordered_map<addr_t, datum_t> unpaged_; // for small page sizes
 
-        bool unpaged() const { return page_size_ <= 1; };
+        bool unpaged() const { return page_size_ <= 1; }
 
         template <typename T, bool CREATE>
             static auto get_or_optionally_init_page(T& t, addr_t a, const datum_t* init_data = nullptr){
