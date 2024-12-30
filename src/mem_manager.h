@@ -25,7 +25,12 @@ class mem_manager : public sparse_mem {
 
     public:
 
-        mem_manager();
+        struct opts {
+            addr_t page_size;
+        };
+        static constexpr opts default_opts{.page_size = 1};
+
+        mem_manager(const opts& o = default_opts);
 
         // TODO
         //addr_t alloc(/* size, addr constraints */);

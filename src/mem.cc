@@ -166,16 +166,6 @@ void mem::load_verilog_hex(const std::string& filename) {
     }
 }
 
-void mem::process(uint8_t *data, ssize_t addr, size_t length) {
-    while (length--) {
-        if (*data) {
-            write(addr, 1, data);
-        }
-        addr++;
-        data++;
-    }
-}
-
 void mem::load_lz4(const std::string& filename, addr_t offset) {
     const size_t BLOCK_SIZE = 4*1024*1024;
 
@@ -202,7 +192,7 @@ void mem::load_lz4(const std::string& filename, addr_t offset) {
         if (LZ4F_isError(ret)) {
             throw std::runtime_error("LZ4F_decompress failed");
         }
-        process(dst, addr+offset, dst_bytes_written);
+        write(addr+offset, dst_bytes_written, dst, &write_options_skip_zero);
         src = src + src_bytes_read;
         src_size = src_size - src_bytes_read;
         addr = addr + dst_bytes_written;
@@ -217,9 +207,9 @@ mem::data_t mem::read(addr_t addr, sz_t size) {
 
 }
 
-void mem::write(addr_t addr, const data_t& data) {
+void mem::write(addr_t addr, const data_t& data, const write_options& options) {
 
-    write(addr, data.size(), data.data());
+    write(addr, data.size(), data.data(), &options);
 
 }
 

@@ -1,6 +1,6 @@
 #include "mem_manager.h"
 
-mem_manager::mem_manager() {}
+mem_manager::mem_manager(const opts& o) : sparse_mem(o.page_size) {}
 
 extern "C" {
 
