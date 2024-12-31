@@ -1,6 +1,7 @@
 #include "sparse_mem.h"
 #include <iterator>
 #include <iostream>
+#include <cstring>
 
 sparse_mem::sparse_mem(addr_t page_size) {
 
@@ -36,8 +37,8 @@ void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data, const mem::w
     for (sz_t s = 0; s < size;) {
         if (opt->skip_zero) {
             sz_t rem = std::min(page_size_ - ((addr + s) & (page_size_ - 1)), size - s);
-            auto it = std::find_if(data, data + rem, [](const datum_t& d) { return d != 0; });
-            if (it == data + rem) {
+            bool page_all_zero = *data == 0 && std::memcmp(data, data + 1, rem - 1) == 0;
+            if (page_all_zero) {
                 s    += rem;
                 data += rem;
                 continue;
