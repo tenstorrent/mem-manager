@@ -35,13 +35,13 @@ void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data, const mem::w
 
     for (sz_t s = 0; s < size;) {
         if (opt->skip_zero) {
-            auto it = std::find_if(data, data + size, [](const datum_t& d) { return d != 0; });
-            auto diff = it - data;
-            s += diff;
-            if (!(s < size)) {
-                return;
+            sz_t rem = std::min(page_size_ - ((addr + s) & (page_size_ - 1)), size - s);
+            auto it = std::find_if(data, data + rem, [](const datum_t& d) { return d != 0; });
+            if (it == data + rem) {
+                s    += rem;
+                data += rem;
+                continue;
             }
-            data += diff;
         }
 
         bool whole_page = ((addr + s) & (page_size_ - 1)) == 0 && (size - s) >= page_size_;
@@ -53,6 +53,7 @@ void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data, const mem::w
         }
         s    += acc_len;
         data += acc_len;
+
     }
 
 }
