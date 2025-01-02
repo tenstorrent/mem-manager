@@ -1,56 +1,103 @@
 #include "sparse_mem.h"
+#include <iterator>
+#include <iostream>
+#include <cstring>
 
-sparse_mem::sparse_mem() {}
+sparse_mem::sparse_mem(addr_t page_size) {
+
+    if (!std::has_single_bit(page_size)) {
+        throw std::invalid_argument("Page size must be a power of two");
+    }
+
+    page_size_ = page_size;
+    page_shift_ = std::countr_zero(page_size);
+
+}
 
 bool sparse_mem::read(addr_t addr, sz_t size, datum_t* data) {
-    bool addr_exists = true;
-    struct gen {
-        sparse_mem& s;
-        addr_t addr;
-        bool& addr_exists;
-        gen(sparse_mem& s, addr_t a, bool& a_e) : s(s), addr(a), addr_exists(a_e) {}
-        datum_t operator()() {
-            auto it = s.mem_.find(addr);
-            if (it == s.mem_.end()) {
-                addr_exists &= false;
-                it = s.mem_.emplace(addr, s.uninitialized_read(addr, 1).at(0)).first;
-            }
-            addr++;
-            return it->second;
-        }
-    };
 
-    std::generate_n(data, size, gen(*this, addr, addr_exists));
+    bool addr_exists = true;
+
+    for (sz_t s = 0; s < size;) {
+        auto [page_it, page_end, created] = get_or_init_page(addr + s);
+        if (created) addr_exists = false;
+        sz_t page_len = std::distance(page_it, page_end);
+        sz_t acc_len  = std::min(page_len, size - s);
+        for (sz_t p = 0; p < acc_len; p++) {
+            *data++ = *page_it++;
+        }
+        s += acc_len;
+    }
+
     return addr_exists;
 }
 
-void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data) {
+void sparse_mem::write(addr_t addr, sz_t size, const datum_t* data, const mem::write_options* opt) {
 
-    for (sz_t s = 0; s < size; s++) {
-        mem_[addr + s] = *data;
-        data++;
+    for (sz_t s = 0; s < size;) {
+        if (opt->skip_zero) {
+            sz_t rem = std::min(page_size_ - ((addr + s) & (page_size_ - 1)), size - s);
+            bool page_all_zero = *data == 0 && std::memcmp(data, data + 1, rem - 1) == 0;
+            if (page_all_zero) {
+                s    += rem;
+                data += rem;
+                continue;
+            }
+        }
+
+        bool whole_page = ((addr + s) & (page_size_ - 1)) == 0 && (size - s) >= page_size_;
+        auto [page_it, page_end, created] = whole_page ? get_or_emplace_page(addr + s, data) : get_or_init_page(addr + s);
+        sz_t page_len = std::distance(page_it, page_end);
+        sz_t acc_len  = std::min(page_len, size - s);
+        if (!(whole_page && created)) {
+            std::copy_n(data, acc_len, page_it);
+        }
+        s    += acc_len;
+        data += acc_len;
+
     }
 
 }
 
 bool sparse_mem::check(addr_t addr, sz_t size, const datum_t* data, bool allow_uninitialized) const {
 
-    for (sz_t s = 0; s < size; s++) {
-        auto it = mem_.find(addr);
-
-        if (it == mem_.end()) {
-            if (!allow_uninitialized || uninitialized_read(addr, 1).at(0) != *data) {
+    for (sz_t s = 0; s < size;) {
+        auto [page_it, page_end, valid] = get_page(addr + s);
+        data_t uninitialized_data;
+        if (!valid) {
+            if (!allow_uninitialized) {
+                return false;
+            }
+            uninitialized_data = uninitialized_read(addr + s, std::min(page_size_ - ((addr + s) & (page_size_-1)), size - s));
+            page_it = &*uninitialized_data.begin();
+            page_end = &uninitialized_data.back()+1;
+        }
+        sz_t page_len = std::distance(page_it, page_end);
+        sz_t acc_len  = std::min(page_len, size - s);
+        for (sz_t p = 0; p < acc_len; p++) {
+            if(*data++ != *page_it++) {
                 return false;
             }
         }
-        else if(it->second != *data) {
-            return false;
-        }
-
-        addr++;
-        data++;
+        s += acc_len;
     }
 
     return true;
 
+}
+
+std::tuple<mem::datum_t*, mem::datum_t*, bool> sparse_mem::get_or_init_page(addr_t a) {
+    return get_or_optionally_init_page<sparse_mem, true>(*this, a);
+}
+
+std::tuple<mem::datum_t*, mem::datum_t*, bool> sparse_mem::get_or_emplace_page(addr_t a, const datum_t* data) {
+    return get_or_optionally_init_page<sparse_mem, true>(*this, a, data);
+}
+
+std::tuple<const mem::datum_t*, const mem::datum_t*, bool> sparse_mem::get_page(addr_t a) const {
+    return get_or_optionally_init_page<const sparse_mem, false>(*this, a);
+}
+
+std::tuple<mem::datum_t*, mem::datum_t*, bool> sparse_mem::get_page(addr_t a) {
+    return get_or_optionally_init_page<sparse_mem, false>(*this, a);
 }
