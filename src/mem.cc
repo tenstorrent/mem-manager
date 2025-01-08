@@ -123,8 +123,7 @@ void mem::load_ELF(const std::string& filename) {
             char mkstemp_template[] = "/tmp/tmpfileXXXXXX";
             int fd = mkstemp(mkstemp_template);
             if (fd != -1) {
-                tmp = mkstemp_template;
-                close(fd);
+                throw std::runtime_error("Failed to create temporary file.");
             }
         }
         ~tmpfile() {
