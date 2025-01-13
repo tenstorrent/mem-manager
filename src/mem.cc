@@ -118,7 +118,16 @@ namespace {
 void mem::load_ELF(const std::string& filename) {
 
     struct tmpfile {
-        std::string tmp = std::tmpnam(nullptr);
+        std::string tmp;
+        tmpfile() {
+            char mkstemp_template[] = "/tmp/tmpfileXXXXXX";
+            int fd = mkstemp(mkstemp_template);
+            if (fd == -1) {
+                throw std::runtime_error("Failed to create temporary file.");
+            }
+            tmp = mkstemp_template;
+            close(fd);
+        }
         ~tmpfile() {
             std::remove(tmp.c_str());
         }
