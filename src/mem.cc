@@ -208,6 +208,28 @@ void mem::load_lz4(const std::string& filename, addr_t offset) {
     }
 }
 
+void mem::load_bin(const std::string& filename, addr_t offset) {
+    const size_t BLOCK_SIZE = 4*1024*1024;
+
+    std::ifstream file(filename, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Couldn't load binary file");
+    }
+
+    std::unique_ptr<uint8_t[]> buffer = std::make_unique<uint8_t[]>(BLOCK_SIZE);
+    addr_t addr = offset;
+
+    while (file) {
+        file.read(reinterpret_cast<char*>(buffer.get()), BLOCK_SIZE);
+        sz_t bytes_read = file.gcount();
+
+        if (bytes_read > 0) {
+            write(addr, bytes_read, buffer.get());
+            addr += bytes_read; // Move address forward
+        }
+    }
+}
+
 mem::data_t mem::read(addr_t addr, sz_t size) {
 
     data_t data(size);
