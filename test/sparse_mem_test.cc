@@ -140,6 +140,12 @@ TEST_P(LoadingTest, LZ4Loading) {
     check_mem(mm, true);
 }
 
+TEST_P(LoadingTest, BinaryLoading) {
+    mem_manager mm(GetParam());
+    mm.load_bin(get_runfile("__main__/test/arith.bin"), 0x80000000);
+    check_mem(mm, true);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     Paging,
     LoadingTest,
