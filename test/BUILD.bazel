@@ -1,23 +1,17 @@
 load("@rules_hdl//verilog:providers.bzl", "verilog_library")
-load("@rules_hdl//verilog:build_defs.bzl", "verilog_flist")
 load("@rules_verilator//verilator:defs.bzl", "verilator_cc_library")
 
 verilog_library(
     name = "mem_manager_test_sv_lib",
     srcs = ["mem_manager_test.sv"],
     deps = ["//:mem_manager_svh"],
-)
-
-verilog_flist(
-    name = "mem_manager_test.f",
-    srcs = ["mem_manager_test_sv_lib"],
+    top_module = "mem_manager_test",
 )
 
 verilator_cc_library(
-    name  = "mem_manager_test_sv",
-    mtop  = "mem_manager_test",
-    flist = "mem_manager_test.f",
-    vopts = ['--assert'],
+    name   = "mem_manager_test_sv",
+    module = ":mem_manager_test_sv_lib",
+    vopts  = ["--assert"],
 )
 
 genrule(

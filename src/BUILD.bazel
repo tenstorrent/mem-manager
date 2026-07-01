@@ -19,6 +19,6 @@ cc_library(
 
 verilog_library(
     name = "mem_manager_svh",
-    srcs = ["mem_manager.svh"],
+    hdrs = ["mem_manager.svh"],
     visibility = ["//:__pkg__"],
 )

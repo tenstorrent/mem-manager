@@ -1,0 +1,30 @@
+# NOTE: bazel/rules_hdl_compat was adapted from cvm. Keep them in sync when cvm's dependency wiring changes.
+
+module(name = "mem_manager", version = "")
+
+# BCR dependencies
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "googletest", version = "1.17.0.bcr.2", repo_name = "com_google_googletest")
+bazel_dep(name = "platforms", version = "1.0.0")
+
+# Upstream Verilator + verilog_library rules
+bazel_dep(name = "rules_verilator", version = "1.1.0")
+bazel_dep(name = "rules_verilog", version = "1.1.0")
+# rules_verilator 1.1.0 pulls verilator 5.046.bcr.3, whose build scripts use
+# rules_venv with Python 3.10+ syntax (PEP 604 unions in venv_process_wrapper.py).
+# Override to the unpatched 5.046 release (still has the :timing target
+# rules_verilator expects but doesn't use rules_venv).
+single_version_override(
+    module_name = "verilator",
+    version = "5.046",
+)
+
+# Local compat shim that publishes the @rules_hdl//verilog:providers.bzl surface
+# this repo (and downstream Tenstorrent repos) still load. Each verilog_library
+# it defines emits both the legacy VerilogInfo and the upstream @rules_verilog
+# VerilogInfo so @rules_verilator can consume it via the `module = ...` attr.
+bazel_dep(name = "rules_hdl", version = "0.0.0")
+local_path_override(
+    module_name = "rules_hdl",
+    path = "bazel/rules_hdl_compat",
+)

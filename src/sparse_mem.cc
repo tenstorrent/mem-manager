@@ -1,4 +1,5 @@
 #include "sparse_mem.h"
+#include <bit>
 #include <iterator>
 #include <iostream>
 #include <cstring>

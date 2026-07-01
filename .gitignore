@@ -1,1 +1,4 @@
-bazel-*
+/bazel-*
+/bazel_output_base
+/bazel_output_user_root
+/MODULE.bazel.lock

@@ -1,0 +1,2 @@
+# WORKSPACE.bzlmod - loaded instead of WORKSPACE when bzlmod is enabled.
+# Dependencies are declared in MODULE.bazel; nothing extra is needed here.

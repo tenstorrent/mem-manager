@@ -1,3 +1,5 @@
+`include "mem_manager.svh"
+
 module mem_manager_test();
 
     byte unsigned data[64];
