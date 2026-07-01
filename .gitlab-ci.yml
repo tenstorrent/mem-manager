@@ -1,12 +1,32 @@
 image:
-    name: aus-gitlab.local.tenstorrent.com:5005/riscv/dv/mem-manager/mem-manager:01134361d721a8da0e188a70df1014e80540c0f290f216c8bb1a600c98526c56
+  name: "ghcr.io/tenstorrent/cvm:0.1.3"
+
+# The internal GitLab runner requires a JWT id_token to authenticate (e.g. to
+# pull the CI image). Drop this block once CI moves to a public runner.
+default:
+    id_tokens:
+        CI_JOB_JWT:
+            aud: https://aus-gitlab.local.tenstorrent.com
 
 stages:
     - test
 
-test:
+# Bazel 7 + bzlmod: full build + test, including the Verilated SystemVerilog
+# testbench (rules_verilator is only wired under bzlmod).
+test-bazel7:
     stage: test
     script:
-        - bazel --output_user_root=./bazel_output_user_root test test:all --test_output=all
+        - bazel-7 --output_user_root=./bazel_output_user_root test //test:all --enable_bzlmod --test_output=all
+    after_script:
+        - chmod +w -R ./bazel_output_user_root
+
+# Bazel 6 + WORKSPACE (no bzlmod): verifies the top-level exports still build
+# under the shape downstream consumers (e.g. rv_tester) use — their own
+# @rules_hdl, no bzlmod. @rules_verilator isn't available in WORKSPACE mode, so
+# this builds //:all (the cc_library + verilog_library exports) only, like cvm.
+build-bazel6-top:
+    stage: test
+    script:
+        - bazel --output_user_root=./bazel_output_user_root build //:all
     after_script:
         - chmod +w -R ./bazel_output_user_root

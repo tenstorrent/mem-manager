@@ -1,6 +1,14 @@
-build --copt=-Wall --copt=-Werror --copt=-std=c++20
-build --cxxopt=-Wall --cxxopt=-Werror --cxxopt=-std=c++20 --host_cxxopt=-std=c++20
-build --action_env=CC=clang
-build --action_env=CXX=clang++
-build --host_action_env=CC=clang
-build --host_action_env=CXX=clang++
+build --cxxopt=-std=c++20 --host_cxxopt=-std=c++20
+build --action_env=CC=clang --action_env=CXX=clang++
+build --host_action_env=CC=clang --host_action_env=CXX=clang++
+
+# clang promotes the C99 implicit-function-declaration warning to an error by
+# default, and -Werror trips on libstdc++'s deprecated std::get_temporary_buffer
+# instantiated from gtest's headers. BCR's verilator / zlib / m4 / flex / bison
+# sources hit the former; gtest hits the latter. Demote both for target + host.
+build --copt=-Wno-error=implicit-function-declaration --host_copt=-Wno-error=implicit-function-declaration
+build --copt=-Wno-error=deprecated-declarations --host_copt=-Wno-error=deprecated-declarations
+
+# -Wall / -Werror on first-party mem-manager code only (the regex excludes
+# external/ repos so BCR dependencies build cleanly).
+build --per_file_copt=-external/.*@-Wall,-Werror
