@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2026 Tenstorrent USA, Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 `include "mem_manager.svh"
 
 module mem_manager_test();
