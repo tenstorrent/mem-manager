@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2026 Tenstorrent USA, Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 #include "mem_manager.h"
 
 mem_manager::mem_manager(const opts& o) : sparse_mem(o.page_size) {}

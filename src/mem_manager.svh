@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2026 Tenstorrent USA, Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 `define _MEM_MANAGER_RETURN_void
 `define _MEM_MANAGER_RETURN_byte return
 
