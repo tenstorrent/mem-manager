@@ -1,0 +1,15 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: © 2026 Tenstorrent USA, Inc.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Test stub for Loading.ObjcopyVersionCheck. When this directory is prepended to
+# $PATH it shadows the real objcopy: `--version` reports an ancient release so
+# the version guard in mem::load_ELF fires, while any other invocation is
+# delegated to the next objcopy on $PATH (the real one).
+if [ "$1" = "--version" ]; then
+    echo "GNU objcopy version 2.30-fake"
+    exit 0
+fi
+
+real=$(which -a objcopy | grep -vF "$0" | head -n 1)
+exec "$real" "$@"
