@@ -41,7 +41,7 @@ class mem {
         void   write(addr_t addr, const data_t& data, const write_options& opt = write_options_default);
         bool   check(addr_t addr, const data_t& data, bool allow_unininitialized = false ) const;
 
-        void   load_ELF(const std::string& filename);
+        void   load_ELF(const std::string& filename, bool skip_objcopy_version_check = false);
         void   load_verilog_hex(const std::string& filename);
         void   load_lz4(const std::string& filename, addr_t offset = 0);
         void   load_bin(const std::string& filename, addr_t offset = 0);
