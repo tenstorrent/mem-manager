@@ -4,6 +4,8 @@
 #include <gtest/gtest.h>
 #include <cinttypes>
 #include <numeric>
+#include <cstdlib>
+#include <string>
 #include "mem_manager.h"
 #include "tools/cpp/runfiles/runfiles.h"
 #include "Vmem_manager_test.h"
@@ -159,6 +161,42 @@ INSTANTIATE_TEST_SUITE_P(
         {.page_size = 1024},
         {.page_size = 4096},
         }));
+
+// Restores $PATH on destruction so an assertion failure can't leak the stubbed PATH
+// into other tests.
+struct PathGuard {
+    std::string old;
+    explicit PathGuard(const char* p) : old(p ? p : "") {}
+    ~PathGuard() { setenv("PATH", old.c_str(), 1); }
+};
+
+TEST(Loading, ObjcopyVersionCheck) {
+    // Prepend the directory holding the checked-in fake objcopy (test/fake_objcopy/
+    // objcopy) to $PATH so it shadows the real objcopy and reports an old version.
+    std::string fake = get_runfile("__main__/test/fake_objcopy/objcopy");
+    ASSERT_FALSE(fake.empty());
+    std::string dir = fake.substr(0, fake.find_last_of('/'));
+
+    PathGuard path_guard(getenv("PATH"));
+    std::string new_path = dir + ":" + path_guard.old;
+    ASSERT_EQ(setenv("PATH", new_path.c_str(), 1), 0);
+
+    std::string elf = get_runfile("__main__/test/arith.riscv");
+
+    // Old objcopy + no override => throws.
+    {
+        mem_manager mm;
+        EXPECT_THROW(mm.load_ELF(elf), std::runtime_error);
+    }
+
+    // Override bypasses the check; the stub delegates `-O verilog` to the real
+    // objcopy so the load still succeeds.
+    {
+        mem_manager mm;
+        EXPECT_NO_THROW(mm.load_ELF(elf, /*skip_objcopy_version_check=*/true));
+        check_mem(mm);
+    }
+}
 
 #if 0
 TEST(Mem, LZ4BigLoading1) {
