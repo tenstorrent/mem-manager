@@ -18,7 +18,7 @@ path = [
     "MODULE.bazel",
     "WORKSPACE",
     "WORKSPACE.bzlmod",
-    "LICENSE_understanding",
+    "LICENSE_understanding.txt",
     "NOTICE",
     "**/BUILD.bazel",
     "**/MODULE.bazel",
@@ -26,7 +26,7 @@ path = [
     "**/*.bzl",
 ]
 precedence = "aggregate"
-SPDX-FileCopyrightText = "© 2026 Tenstorrent USA, Inc."
+SPDX-FileCopyrightText = "2026 Tenstorrent USA, Inc."
 SPDX-License-Identifier = "Apache-2.0"
 
 # --- Binary test fixtures ----------------------------------------------------
@@ -41,14 +41,24 @@ path = [
     "test/arith.riscv",
 ]
 precedence = "aggregate"
-SPDX-FileCopyrightText = "© 2026 Tenstorrent USA, Inc."
+SPDX-FileCopyrightText = "2026 Tenstorrent USA, Inc."
 SPDX-License-Identifier = "Apache-2.0"
 
 # --- Documentation (CC BY 4.0) -----------------------------------------------
 # Prose documentation is licensed under CC BY 4.0 (see LICENSE-DOCS), matching
 # the project's split between code (Apache-2.0) and docs.
 [[annotations]]
-path = ["README.md"]
+path = [
+    "README.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    ".github/CONTRIBUTING.md",
+    ".github/CODE_OF_CONDUCT.md",
+    ".github/SECURITY.md",
+    ".github/ISSUE_TEMPLATE/**",
+    ".github/PULL_REQUEST_TEMPLATE/**",
+]
 precedence = "aggregate"
-SPDX-FileCopyrightText = "© 2026 Tenstorrent USA, Inc."
+SPDX-FileCopyrightText = "2026 Tenstorrent USA, Inc."
 SPDX-License-Identifier = "CC-BY-4.0"

@@ -3,10 +3,6 @@ image:
 
 # The internal GitLab runner requires a JWT id_token to authenticate (e.g. to
 # pull the CI image). Drop this block once CI moves to a public runner.
-default:
-    id_tokens:
-        CI_JOB_JWT:
-            aud: https://aus-gitlab.local.tenstorrent.com
 
 stages:
     - test
