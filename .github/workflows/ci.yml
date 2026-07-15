@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: © 2026 Tenstorrent USA, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Enforce REUSE (https://reuse.software) licensing compliance: every file must
+  # carry an SPDX license/copyright header or be covered by REUSE.toml.
+  # reuse is installed into a venv because the image's Debian bookworm has a
+  # PEP-668 managed system pip. The [charset-normalizer] extra provides reuse's
+  # encoding detector in pure Python, so no libmagic/`file` package is needed.
+  license-check:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/tenstorrent/cvm:0.1.3
+    steps:
+      - uses: actions/checkout@v4
+      - name: REUSE lint
+        run: |
+          python3 -m venv /tmp/reuse-venv
+          /tmp/reuse-venv/bin/pip install --quiet --no-cache-dir "reuse[charset-normalizer]==6.2.0"
+          /tmp/reuse-venv/bin/reuse lint
+
+  # Bazel 7 + bzlmod: full build + test, including the Verilated SystemVerilog
+  # testbench (rules_verilator is only wired under bzlmod).
+  test-bazel7:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/tenstorrent/cvm:0.1.3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bazel 7 test (bzlmod)
+        run: bazel-7 --output_user_root=./bazel_output_user_root test //test:all --enable_bzlmod --test_output=all
+
+  # Bazel 6 + WORKSPACE (no bzlmod): verifies the top-level exports still build
+  # under the shape downstream consumers (e.g. rv_tester) use — their own
+  # @rules_hdl, no bzlmod. @rules_verilator isn't available in WORKSPACE mode, so
+  # this builds //:all (the cc_library + verilog_library exports) only, like cvm.
+  build-bazel6-top:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/tenstorrent/cvm:0.1.3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bazel 6 build //:all (WORKSPACE)
+        run: bazel --output_user_root=./bazel_output_user_root build //:all
