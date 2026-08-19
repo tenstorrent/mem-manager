@@ -9,6 +9,8 @@
 #include <functional>
 #include <fstream>
 #include <limits>
+#include <regex>
+#include <tuple>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdint.h>
@@ -116,9 +118,41 @@ namespace {
             }
     };
 
+    // objcopy only emits correct `-O verilog` output for load addresses wider
+    // than 32 bits starting with binutils 2.33; older versions truncate the
+    // Verilog `@` address records to 32 bits.
+    bool objcopy_at_least_2_33() {
+        int exit_code;
+        std::string version;
+        std::tie(exit_code, version) = util::exec("objcopy --version");
+        if (WEXITSTATUS(exit_code)) {
+            return false;
+        }
+
+        // Matches the first MAJOR.MINOR token, e.g. "2.38-17.el8" or "2.34".
+        std::smatch m;
+        std::regex re("([0-9]+)\\.([0-9]+)");
+        if (!std::regex_search(version, m, re)) {
+            // Couldn't parse a version; be conservative and treat it as too old.
+            return false;
+        }
+
+        int major = std::stoi(m[1].str());
+        int minor = std::stoi(m[2].str());
+        return major > 2 || (major == 2 && minor >= 33);
+    }
+
 }
 
-void mem::load_ELF(const std::string& filename) {
+void mem::load_ELF(const std::string& filename, bool skip_objcopy_version_check) {
+
+    if (!skip_objcopy_version_check && !objcopy_at_least_2_33()) {
+        throw std::runtime_error(
+            "objcopy < 2.33 does not emit correct `-O verilog` output for load "
+            "addresses above 4 GiB (addresses are truncated to 32 bits). Upgrade "
+            "binutils to >= 2.33, or call load_ELF with skip_objcopy_version_check = "
+            "true to bypass this check.");
+    }
 
     struct tmpfile {
         std::string tmp;

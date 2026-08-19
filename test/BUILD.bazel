@@ -29,6 +29,7 @@ cc_binary(
         "arith.hex",
         "arith.bin.lz4",
         "arith.bin",
+        "fake_objcopy/objcopy",
     ],
     deps = [
         "//:mem_manager",
